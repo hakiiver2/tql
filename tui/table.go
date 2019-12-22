@@ -2,12 +2,14 @@ package tui
 
 import (
     "strings"
+    "strconv"
     "github.com/rivo/tview"
     "github.com/gdamore/tcell"
     "database/sql"
 	"github.com/hakiiver2/showcol/dbinfo"
     "fmt"
     _ "github.com/go-sql-driver/mysql"
+    "os"
 )
 
 
@@ -15,7 +17,10 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
     table := tview.NewTable().SetFixed(1, 1);
     fmt.Println("Reading...");
 
-    for row, line := range strings.Split(getColumns(info), "\n") {
+    skip_row := 0;
+    max_row := 40;
+
+    for row, line := range strings.Split(getColumns(info, skip_row, max_row), "\n") {
         for column, cell := range strings.Split(line, "|") {
             color := tcell.ColorWhite
             if row == 0{
@@ -40,18 +45,42 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
         }
     }
 
-    table.SetBorder(true).SetTitle("table")
+
+    table.SetBorder(true).SetTitle("table");
+    table.SetSelectable(true, false).
+        SetSeparator(' ');
+    table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+        if event.Key() == tcell.KeyUp {
+        }
+        if event.Key() == tcell.KeyDown {
+            file, err := os.Create("lololo")
+            if err != nil {
+            }
+            defer file.Close()
+
+            //line := "fkdsja;lfjkd;ak";
+            cur_row, _ := table.GetSelection()
+            if max_row <= (cur_row + 10) {
+                b := []byte("JKFDLKJLDJ")
+                file.Write(b)
+            }
+            //cur_row, cur_col := table.GetOffset();
+        }
+        return event;
+    });
 
     return table;
 }
 
-func getColumns(info *dbinfo.DbInfo) string {
+func getColumns(info *dbinfo.DbInfo, skip int, max int) string {
     db, err := sql.Open("mysql", info.UserName + ":@/" + info.DbName)
     if err != nil {
         panic(err);
     }
+    skip_string := strconv.Itoa(skip)
+    max_string := strconv.Itoa(max)
 
-    r, err := db.Query("SELECT * FROM review LIMIT 10000");
+    r, err := db.Query("SELECT * FROM review LIMIT " + max_string + " OFFSET " + skip_string);
     if err != nil {
         panic(err);
     }
@@ -81,7 +110,7 @@ func getColumns(info *dbinfo.DbInfo) string {
             }
         }
         tt += entry
-        tt += "\n\n"
+        tt += "\n"
     }
 
     return tt;

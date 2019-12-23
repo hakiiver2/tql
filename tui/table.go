@@ -49,25 +49,34 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
     table.SetBorder(true).SetTitle("table");
     table.SetSelectable(true, false).
         SetSeparator(' ');
-    table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-        if event.Key() == tcell.KeyUp {
-        }
-        if event.Key() == tcell.KeyDown {
+    table.SetSelectionChangedFunc(func(row int, col int){
             file, err := os.Create("lololo")
             if err != nil {
             }
             defer file.Close()
 
-            //line := "fkdsja;lfjkd;ak";
-            cur_row, _ := table.GetSelection()
-            if max_row <= (cur_row + 10) {
+            if max_row <= (row + 10) {
                 b := []byte("JKFDLKJLDJ")
                 file.Write(b)
             }
-            //cur_row, cur_col := table.GetOffset();
-        }
-        return event;
-    });
+    })
+    // table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+    //     if event.Key() == tcell.KeyUp {
+    //     }
+    //     if event.Key() == tcell.KeyDown {
+    //         file, err := os.Create("lololo")
+    //         if err != nil {
+    //         }
+    //         defer file.Close()
+    //
+    //         cur_row, _ := table.GetSelection()
+    //         if max_row <= (cur_row + 10) {
+    //             b := []byte("JKFDLKJLDJ")
+    //             file.Write(b)
+    //         }
+    //     }
+    //     return event;
+    // });
 
     return table;
 }

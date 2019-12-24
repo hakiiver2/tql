@@ -59,8 +59,6 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
             b := []byte(strconv.Itoa(max_row))
             file.Write(b)
             if max_row == row {
-                b := []byte("JKFDLKJLDJ")
-                file.Write(b)
                 offset, max_row = offset + skip, skip + max_row;
                 for row, line := range strings.Split(getRows(info, offset, max_row, "add"), "\n") {
                     cur_row := row + offset;

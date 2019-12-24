@@ -61,9 +61,19 @@ func ConnectDB(tui *Tui, DB string, info *dbinfo.DbInfo){
         fmt.Fprint(textview, tableName + "\n");
     }
 
+    texts := tview.NewTextView().
+        SetDynamicColors(true).
+        SetRegions(true).
+        SetWrap(false);
+    fmt.Fprintf(texts, `hello`)
+
     //tui.Pages.AddAndSwitchToPage("tableList", textview, true);
     table := CreateTable(tui, info);
-    tui.Pages.AddAndSwitchToPage("tableList", table, true);
+    layout := tview.NewFlex().
+        SetDirection(tview.FlexRow).
+        AddItem(table, 0, 1, true).
+        AddItem(texts, 1, 1, false)
+    tui.Pages.AddAndSwitchToPage("tableList", layout, true);
     if err := tui.App.SetRoot(tui.Pages, true).Run(); err != nil {
         panic(err);
     }

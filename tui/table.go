@@ -20,7 +20,7 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
     skip_row := 0;
     max_row := 40;
 
-    for row, line := range strings.Split(getColumns(info, skip_row, max_row), "\n") {
+    for row, line := range strings.Split(getRows(info, skip_row, max_row, "init"), "\n") {
         for column, cell := range strings.Split(line, "|") {
             color := tcell.ColorWhite
             if row == 0{
@@ -55,9 +55,33 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
             }
             defer file.Close()
 
-            if max_row <= (row + 10) {
+            if max_row == row {
                 b := []byte("JKFDLKJLDJ")
                 file.Write(b)
+                skip_row, max_row := skip_row + max_row, max_row + max_row;
+                for row, line := range strings.Split(getRows(info, skip_row, max_row, "add"), "\n") {
+                    cur_row := row + skip_row;
+                    for column, cell := range strings.Split(line, "|") {
+                        color := tcell.ColorWhite
+                        if column == 0 {
+                            color = tcell.ColorDarkCyan
+                        }
+                        align := tview.AlignLeft
+                        if column == 0 || column >= 4 {
+                            align = tview.AlignRight
+                        }
+                        tableCell := tview.NewTableCell(cell).
+                        SetTextColor(color).
+                        SetAlign(align).
+                        SetSelectable(cur_row != 0 && column != 0)
+                        if column >= 1 && column <= 3 {
+                            tableCell.SetExpansion(1)
+                        }
+                        b := []byte(line);
+                        file.Write(b)
+                        table.SetCell(cur_row, column, tableCell)
+                    }
+                }
             }
     })
     // table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -81,7 +105,7 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
     return table;
 }
 
-func getColumns(info *dbinfo.DbInfo, skip int, max int) string {
+func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
     db, err := sql.Open("mysql", info.UserName + ":@/" + info.DbName)
     if err != nil {
         panic(err);

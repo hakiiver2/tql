@@ -17,10 +17,11 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
     table := tview.NewTable().SetFixed(1, 1);
     fmt.Println("Reading...");
 
-    skip_row := 0;
-    max_row := 40;
+    offset := 0;
+    skip := 100;
+    max_row := skip;
 
-    for row, line := range strings.Split(getRows(info, skip_row, max_row, "init"), "\n") {
+    for row, line := range strings.Split(getRows(info, offset, max_row, "init"), "\n") {
         for column, cell := range strings.Split(line, "|") {
             color := tcell.ColorWhite
             if row == 0{
@@ -55,12 +56,14 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
             }
             defer file.Close()
 
+            b := []byte(strconv.Itoa(max_row))
+            file.Write(b)
             if max_row == row {
                 b := []byte("JKFDLKJLDJ")
                 file.Write(b)
-                skip_row, max_row := skip_row + max_row, max_row + max_row;
-                for row, line := range strings.Split(getRows(info, skip_row, max_row, "add"), "\n") {
-                    cur_row := row + skip_row;
+                offset, max_row = offset + skip, skip + max_row;
+                for row, line := range strings.Split(getRows(info, offset, max_row, "add"), "\n") {
+                    cur_row := row + offset;
                     for column, cell := range strings.Split(line, "|") {
                         color := tcell.ColorWhite
                         if column == 0 {
@@ -108,8 +111,10 @@ func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
         scanArgs[i] = &values[i]
     }
     var tt string = "|"
-    for _, col := range columns {
-        tt += col + "|"
+    if f_type == "init" {
+        for _, col := range columns {
+            tt += col + "|"
+        }
     }
 
     tt += "\n"

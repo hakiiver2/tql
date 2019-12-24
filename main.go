@@ -16,10 +16,11 @@ func main() {
         UserName = flag.String("username", "", "username")
         PassWord = flag.String("pass", "", "password")
         DbName = flag.String("db", "", "database name")
+        TableName = flag.String("table", "", "table name")
     )
     flag.Parse()
 
-    info := dbinfo.New().Set(*UserName, *PassWord, *DbName);
+    info := dbinfo.New().Set(*UserName, *PassWord, *DbName, *TableName);
     iinfo := info.GetDbInfo();
     fmt.Println(iinfo)
     fmt.Println(info);

@@ -5,9 +5,10 @@ import (
 )
 
 type DbInfo struct {
-    UserName string
-    PassWord string
-    DbName   string
+    UserName  string
+    PassWord  string
+    DbName    string
+    TableName string
 }
 
 var dbInfo *DbInfo
@@ -18,16 +19,18 @@ func New() *DbInfo {
         UserName: empty,
         PassWord: empty,
         DbName:   empty,
+        TableName:   empty,
     }
 
     return dbinfo;
 }
 
-func SetDbInfo (UserName string, PassWord string, DbName string) *DbInfo{
+func SetDbInfo (UserName string, PassWord string, DbName string, TableName string) *DbInfo{
 
     dbInfo.UserName = UserName;
     dbInfo.PassWord = PassWord;
     dbInfo.DbName   = DbName;
+    dbInfo.TableName   = TableName;
 
     fmt.Println(dbInfo.UserName)
 
@@ -35,11 +38,12 @@ func SetDbInfo (UserName string, PassWord string, DbName string) *DbInfo{
 }
 
 
-func (dbinfo *DbInfo) Set (UserName string, PassWord string, DbName string) *DbInfo{
+func (dbinfo *DbInfo) Set (UserName string, PassWord string, DbName string,TableName string) *DbInfo{
 
     dbinfo.UserName = UserName;
     dbinfo.PassWord = PassWord;
     dbinfo.DbName   = DbName;
+    dbinfo.TableName   = TableName;
 
     fmt.Println(dbinfo.UserName)
 

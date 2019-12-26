@@ -10,6 +10,7 @@ import (
 	"github.com/hakiiver2/tql/tui"
 )
 
+
 func main() {
     var i interface{}
     var (
@@ -17,10 +18,11 @@ func main() {
         PassWord = flag.String("pass", "", "password")
         DbName = flag.String("db", "", "database name")
         TableName = flag.String("table", "", "table name")
+        FieldName = flag.String("field", "*", "field name")
     )
     flag.Parse()
 
-    info := dbinfo.New().Set(*UserName, *PassWord, *DbName, *TableName);
+    info := dbinfo.New().Set(*UserName, *PassWord, *DbName, *TableName, *FieldName);
     iinfo := info.GetDbInfo();
     fmt.Println(iinfo)
     fmt.Println(info);

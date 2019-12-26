@@ -17,9 +17,10 @@ type Tui struct {
 }
 
 type mydb struct {
-    username string
-    password string
-    dbname   string
+    username  string
+    password  string
+    dbname    string
+    fieldname string
 }
 
 func New() *Tui{

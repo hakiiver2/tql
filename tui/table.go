@@ -97,7 +97,7 @@ func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
     skip_string := strconv.Itoa(skip)
     max_string := strconv.Itoa(max)
 
-    r, err := db.Query("SELECT * FROM " + info.TableName +" LIMIT " + max_string + " OFFSET " + skip_string);
+    r, err := db.Query("SELECT " + info.FieldName + " FROM " + info.TableName +" LIMIT " + max_string + " OFFSET " + skip_string);
     if err != nil {
         panic(err);
     }

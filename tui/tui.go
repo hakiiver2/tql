@@ -4,7 +4,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/rivo/tview"
-	"github.com/hakiiver2/showcol/dbinfo"
+	"github.com/hakiiver2/tql/dbinfo"
     //"strconv"
     _ "github.com/go-sql-driver/mysql"
 )
@@ -12,6 +12,7 @@ import (
 type Tui struct {
     List   *tview.List
     Pages  *tview.Pages
+    Navi   *Navi
     App    *tview.Application
 }
 
@@ -25,6 +26,7 @@ func New() *Tui{
     tui := &Tui{
         List:  tview.NewList(),
         Pages: tview.NewPages(),
+        Navi : NewNavi(),
         App:   tview.NewApplication(),
     }
     return tui
@@ -61,18 +63,15 @@ func ConnectDB(tui *Tui, DB string, info *dbinfo.DbInfo){
         fmt.Fprint(textview, tableName + "\n");
     }
 
-    texts := tview.NewTextView().
-        SetDynamicColors(true).
-        SetRegions(true).
-        SetWrap(false);
-    fmt.Fprintf(texts, `hello`)
+    tui.SetKeyBind();
+
 
     //tui.Pages.AddAndSwitchToPage("tableList", textview, true);
     table := CreateTable(tui, info);
     layout := tview.NewFlex().
         SetDirection(tview.FlexRow).
         AddItem(table, 0, 1, true).
-        AddItem(texts, 1, 1, false)
+        AddItem(tui.Navi, 1, 1, false)
     tui.Pages.AddAndSwitchToPage("tableList", layout, true);
     if err := tui.App.SetRoot(tui.Pages, true).Run(); err != nil {
         panic(err);

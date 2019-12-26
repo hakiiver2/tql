@@ -6,8 +6,8 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/hakiiver2/showcol/dbinfo"
-	"github.com/hakiiver2/showcol/tui"
+	"github.com/hakiiver2/tql/dbinfo"
+	"github.com/hakiiver2/tql/tui"
 )
 
 func main() {

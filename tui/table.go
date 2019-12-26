@@ -6,7 +6,7 @@ import (
     "github.com/rivo/tview"
     "github.com/gdamore/tcell"
     "database/sql"
-	"github.com/hakiiver2/showcol/dbinfo"
+	"github.com/hakiiver2/tql/dbinfo"
     "fmt"
     _ "github.com/go-sql-driver/mysql"
     "os"

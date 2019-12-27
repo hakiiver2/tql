@@ -47,6 +47,9 @@ func (t *Tui)SetKeyBind () {
         case 'r':
             t.Table.SetSelectable(true, false)
         }
+        if event.Key() == tcell.KeyEnter {
+
+        }
 
         return event;
     })

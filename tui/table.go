@@ -13,8 +13,8 @@ import (
 )
 
 
-func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
-    table := tview.NewTable().SetFixed(1, 1);
+func (t *Tui) CreateTable(info *dbinfo.DbInfo) {
+    t.Table.SetFixed(1, 1);
     fmt.Println("Reading...");
 
     offset := 0;
@@ -42,15 +42,15 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
             if column >= 1 && column <= 3 {
                 tableCell.SetExpansion(1)
             }
-            table.SetCell(row, column, tableCell)
+            t.Table.SetCell(row, column, tableCell)
         }
     }
 
 
-    table.SetBorder(true).SetTitle("table");
-    table.SetSelectable(true, false).
+    t.Table.SetBorder(true).SetTitle("table");
+    t.Table.SetSelectable(true, false).
         SetSeparator(' ');
-    table.SetSelectionChangedFunc(func(row int, col int){
+    t.Table.SetSelectionChangedFunc(func(row int, col int){
             file, err := os.Create("lololo")
             if err != nil {
             }
@@ -80,13 +80,12 @@ func CreateTable(tui *Tui, info *dbinfo.DbInfo) tview.Primitive {
                         }
                         b := []byte(line);
                         file.Write(b)
-                        table.SetCell(cur_row, column, tableCell)
+                        t.Table.SetCell(cur_row, column, tableCell)
                     }
                 }
             }
     })
 
-    return table;
 }
 
 func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {

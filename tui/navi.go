@@ -10,8 +10,10 @@ import (
 var NaviColor = `[red::b]%s[white]: %s`
 
 var (
-    stopApp = fmt.Sprintf(NaviColor, "ctrl-q", "stop")
-    defaultNavis = strings.Join([]string{stopApp}, "\n")
+    cellMode = fmt.Sprintf(NaviColor, "c", "cell mode")
+    rowMode  = fmt.Sprintf(NaviColor, "r", "row mode")
+    stopApp  = fmt.Sprintf(NaviColor, "q", "stop")
+    defaultNavis = strings.Join([]string{cellMode, rowMode, stopApp}, "  ")
 )
 
 type Navi struct {
@@ -31,9 +33,21 @@ func NewNavi() *Navi {
 func (t *Tui)SetKeyBind () {
     t.Navi.SetText(defaultNavis)
     t.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-        if event.Key() == tcell.KeyCtrlQ {
+        // if event.Key() == tcell.KeyCtrlQ {
+        //     t.App.Stop();
+        // }
+        // if event.Rune() == 'c' {
+        //     t.App.Stop();
+        // }
+        switch event.Rune() {
+        case 'q':
             t.App.Stop();
+        case 'c':
+            t.Table.SetSelectable(true, true)
+        case 'r':
+            t.Table.SetSelectable(true, false)
         }
+
         return event;
     })
 

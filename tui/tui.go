@@ -13,6 +13,7 @@ type Tui struct {
     List   *tview.List
     Pages  *tview.Pages
     Navi   *Navi
+    Table  *tview.Table
     App    *tview.Application
 }
 
@@ -28,6 +29,7 @@ func New() *Tui{
         List:  tview.NewList(),
         Pages: tview.NewPages(),
         Navi : NewNavi(),
+        Table: tview.NewTable(),
         App:   tview.NewApplication(),
     }
     return tui
@@ -68,10 +70,10 @@ func ConnectDB(tui *Tui, DB string, info *dbinfo.DbInfo){
 
 
     //tui.Pages.AddAndSwitchToPage("tableList", textview, true);
-    table := CreateTable(tui, info);
+    tui.CreateTable(info);
     layout := tview.NewFlex().
         SetDirection(tview.FlexRow).
-        AddItem(table, 0, 1, true).
+        AddItem(tui.Table, 0, 1, true).
         AddItem(tui.Navi, 1, 1, false)
     tui.Pages.AddAndSwitchToPage("tableList", layout, true);
     if err := tui.App.SetRoot(tui.Pages, true).Run(); err != nil {

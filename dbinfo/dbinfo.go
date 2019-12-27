@@ -10,6 +10,7 @@ type DbInfo struct {
     DbName    string
     TableName string
     FieldName string
+    Sql       string
 }
 
 var dbInfo *DbInfo
@@ -22,18 +23,20 @@ func New() *DbInfo {
         DbName:     empty,
         TableName:  empty,
         FieldName:  empty,
+        Sql:  empty,
     }
 
     return dbinfo;
 }
 
-func SetDbInfo (UserName string, PassWord string, DbName string, TableName string, FieldName string) *DbInfo{
+func SetDbInfo (UserName string, PassWord string, DbName string, TableName string, FieldName string, Sql string) *DbInfo{
 
-    dbInfo.UserName = UserName;
-    dbInfo.PassWord = PassWord;
-    dbInfo.DbName   = DbName;
-    dbInfo.TableName   = TableName;
-    dbInfo.FieldName   = FieldName;
+    dbInfo.UserName   = UserName;
+    dbInfo.PassWord   = PassWord;
+    dbInfo.DbName     = DbName;
+    dbInfo.TableName  = TableName;
+    dbInfo.FieldName  = FieldName;
+    dbInfo.Sql        = Sql;
 
     fmt.Println(dbInfo.UserName)
 
@@ -41,13 +44,14 @@ func SetDbInfo (UserName string, PassWord string, DbName string, TableName strin
 }
 
 
-func (dbinfo *DbInfo) Set (UserName string, PassWord string, DbName string,TableName string, FieldName string) *DbInfo{
+func (dbinfo *DbInfo) Set (UserName string, PassWord string, DbName string,TableName string, FieldName string, Sql  string) *DbInfo{
 
-    dbinfo.UserName = UserName;
-    dbinfo.PassWord = PassWord;
-    dbinfo.DbName   = DbName;
-    dbinfo.TableName   = TableName;
-    dbinfo.FieldName   = FieldName;
+    dbinfo.UserName   = UserName;
+    dbinfo.PassWord   = PassWord;
+    dbinfo.DbName     = DbName;
+    dbinfo.TableName  = TableName;
+    dbinfo.FieldName  = FieldName;
+    dbinfo.Sql        = Sql;
 
     fmt.Println(dbinfo.UserName)
 

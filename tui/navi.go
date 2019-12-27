@@ -16,6 +16,11 @@ var (
     defaultNavis = strings.Join([]string{cellMode, rowMode, stopApp}, "  ")
 )
 
+var (
+    modal_stopApp  = fmt.Sprintf(NaviColor, "q", "quit")
+    modalNavis = strings.Join([]string{modal_stopApp}, "  ")
+)
+
 type Navi struct {
     *tview.TextView
 }
@@ -72,7 +77,7 @@ func (t *Tui)SetKeyBind () {
                 t.Layout.RemoveItem(t.Table);
                 t.Layout.RemoveItem(t.Navi);
                 t.Layout.AddItem(t.Modal, 0, 1, true);
-                t.Layout.AddItem(t.Navi, 1, 1, false)
+                t.Layout.AddItem(modalNavi(), 1, 1, false)
                 t.Pages.AddAndSwitchToPage("modal", t.Layout, true);
             }
         }
@@ -81,3 +86,16 @@ func (t *Tui)SetKeyBind () {
     })
 
 }
+
+func modalNavi () *Navi {
+    view := tview.NewTextView().
+        SetDynamicColors(true).
+        SetWrap(false).
+        SetRegions(true);
+    navi := &Navi{TextView: view}
+    navi.SetText(modalNavis)
+
+    return navi;
+}
+
+

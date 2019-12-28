@@ -35,6 +35,14 @@ func NewNavi() *Navi {
         return navi;
 }
 
+func (t *Tui) SetNaviText(pageName string) {
+    if pageName == "tableList" {
+        t.Navi.SetText(modalNavis)
+    }else if pageName == "modal" {
+        t.Navi.SetText(defaultNavis)
+    }
+}
+
 func (t *Tui)SetKeyBind () {
     t.Navi.SetText(defaultNavis)
     t.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -55,47 +63,52 @@ func (t *Tui)SetKeyBind () {
             t.Table.SetSelectable(true, false)
         }
         if event.Key() == tcell.KeyEnter {
-            row, col := t.Table.GetSelection();
-            textArr := make([]string, 0)
-            if t.Mode == "cell"{
-                cell := t.Table.GetCell(row, col);
-                t.Modal.SetText(cell.Text);
+            frontPageName, _ := t.Pages.GetFrontPage();
+            t.SetNaviText(frontPageName);
+            if frontPageName == "tableList" {
+                row, col := t.Table.GetSelection();
+                textArr := make([]string, 0)
+                if t.Mode == "cell"{
+                    cell := t.Table.GetCell(row, col);
+                    t.Modal.SetText(cell.Text);
 
-                t.Layout.RemoveItem(t.Table);
-                t.Layout.AddItem(t.Modal, 0, 1, true);
-                t.Layout.AddItem(t.Navi, 1, 1, false)
-                t.Pages.AddAndSwitchToPage("modal", t.Layout, true);
-            }else if t.Mode == "row" {
-                col_max := t.Table.GetColumnCount();
-                for i := 0; i < col_max; i++ {
-                    row, _ := t.Table.GetSelection();
-                    cell := t.Table.GetCell(row, i);
-                    textArr = append(textArr, cell.Text)
+                    t.Layout.RemoveItem(t.Table);
+                    t.Layout.RemoveItem(t.Navi);
+                    t.Pages.RemovePage("tableList");
+                    t.Layout.AddItem(t.Modal, 0, 1, true);
+                    t.Layout.AddItem(t.Navi, 1, 1, false)
+                    t.Pages.AddAndSwitchToPage("modal", t.Layout, true);
+                }else if t.Mode == "row" {
+                    col_max := t.Table.GetColumnCount();
+                    for i := 0; i < col_max; i++ {
+                        row, _ := t.Table.GetSelection();
+                        cell := t.Table.GetCell(row, i);
+                        textArr = append(textArr, cell.Text)
+                    }
+                    t.Modal.SetText(strings.Join(textArr, "\n"));
+
+                    t.Layout.RemoveItem(t.Table);
+                    t.Layout.RemoveItem(t.Navi);
+                    t.Pages.RemovePage("tableList");
+                    t.Layout.AddItem(t.Modal, 0, 1, true);
+                    t.Layout.AddItem(t.Navi, 1, 1, false)
+                    t.Pages.AddAndSwitchToPage("modal", t.Layout, true);
                 }
-                t.Modal.SetText(strings.Join(textArr, "\n"));
-
-                t.Layout.RemoveItem(t.Table);
-                t.Layout.RemoveItem(t.Navi);
-                t.Layout.AddItem(t.Modal, 0, 1, true);
-                t.Layout.AddItem(modalNavi(), 1, 1, false)
-                t.Pages.AddAndSwitchToPage("modal", t.Layout, true);
+            } else {
+                    t.Layout.RemoveItem(t.Modal);
+                    t.Layout.RemoveItem(t.Navi)
+                    t.Pages.RemovePage("modal");
+                    t.Layout.
+                    SetDirection(tview.FlexRow).
+                    AddItem(t.Table, 0, 1, true).
+                    AddItem(t.Navi, 1, 1, false)
+                t.Pages.AddAndSwitchToPage("tableList", t.Layout, true);
             }
         }
 
         return event;
     })
 
-}
-
-func modalNavi () *Navi {
-    view := tview.NewTextView().
-        SetDynamicColors(true).
-        SetWrap(false).
-        SetRegions(true);
-    navi := &Navi{TextView: view}
-    navi.SetText(modalNavis)
-
-    return navi;
 }
 
 

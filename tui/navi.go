@@ -52,19 +52,24 @@ func (t *Tui)SetKeyBind () {
         // if event.Rune() == 'c' {
         //     t.App.Stop();
         // }
+        frontPageName, _ := t.Pages.GetFrontPage();
         switch event.Rune() {
         case 'q':
             t.App.Stop();
         case 'c':
-            t.Mode = "cell";
-            t.Table.SetSelectable(true, true)
+            if frontPageName == "tableList" {
+                t.Mode = "cell";
+                t.Table.SetSelectable(true, true)
+            }
         case 'r':
-            t.Mode = "row";
-            t.Table.SetSelectable(true, false)
+            if frontPageName == "tableList" {
+                t.Mode = "row";
+                t.Table.SetSelectable(true, false)
+            }
         }
         if event.Key() == tcell.KeyEnter {
-            frontPageName, _ := t.Pages.GetFrontPage();
             t.SetNaviText(frontPageName);
+            var nextPageName string
             if frontPageName == "tableList" {
                 row, col := t.Table.GetSelection();
                 textArr := make([]string, 0)
@@ -72,12 +77,6 @@ func (t *Tui)SetKeyBind () {
                     cell := t.Table.GetCell(row, col);
                     t.Modal.SetText(cell.Text);
 
-                    t.Layout.RemoveItem(t.Table);
-                    t.Layout.RemoveItem(t.Navi);
-                    t.Pages.RemovePage("tableList");
-                    t.Layout.AddItem(t.Modal, 0, 1, true);
-                    t.Layout.AddItem(t.Navi, 1, 1, false)
-                    t.Pages.AddAndSwitchToPage("modal", t.Layout, true);
                 }else if t.Mode == "row" {
                     col_max := t.Table.GetColumnCount();
                     for i := 0; i < col_max; i++ {
@@ -87,23 +86,20 @@ func (t *Tui)SetKeyBind () {
                     }
                     t.Modal.SetText(strings.Join(textArr, "\n"));
 
-                    t.Layout.RemoveItem(t.Table);
-                    t.Layout.RemoveItem(t.Navi);
-                    t.Pages.RemovePage("tableList");
-                    t.Layout.AddItem(t.Modal, 0, 1, true);
-                    t.Layout.AddItem(t.Navi, 1, 1, false)
-                    t.Pages.AddAndSwitchToPage("modal", t.Layout, true);
                 }
+                t.Layout.RemoveItem(t.Table)
+                t.Layout.AddItem(t.Modal, 0, 1, true)
+                nextPageName = "modal"
             } else {
-                    t.Layout.RemoveItem(t.Modal);
-                    t.Layout.RemoveItem(t.Navi)
-                    t.Pages.RemovePage("modal");
-                    t.Layout.
-                    SetDirection(tview.FlexRow).
-                    AddItem(t.Table, 0, 1, true).
-                    AddItem(t.Navi, 1, 1, false)
-                t.Pages.AddAndSwitchToPage("tableList", t.Layout, true);
+                t.Layout.RemoveItem(t.Modal)
+                t.Layout.AddItem(t.Table, 0, 1, true)
+                nextPageName = "tableList"
             }
+            t.Layout.RemoveItem(t.Navi)
+            t.Pages.RemovePage(frontPageName)
+
+            t.Layout.AddItem(t.Navi, 1, 1, false)
+            t.Pages.AddAndSwitchToPage(nextPageName, t.Layout, true)
         }
 
         return event;

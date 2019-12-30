@@ -16,6 +16,7 @@ type Tui struct {
     Table  *tview.Table
     Modal  *tview.Modal
     Layout *tview.Flex
+    EditForm *tview.Form
     App    *tview.Application
     Mode   string
 }
@@ -35,6 +36,7 @@ func New() *Tui{
         Table: tview.NewTable(),
         Modal: tview.NewModal(),
         Layout: tview.NewFlex(),
+        EditForm: tview.NewForm(),
         Mode  : "row",
         App:   tview.NewApplication(),
     }

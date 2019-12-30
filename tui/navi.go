@@ -12,8 +12,9 @@ var NaviColor = `[red::b]%s[white]: %s`
 var (
     cellMode = fmt.Sprintf(NaviColor, "c", "cell mode")
     rowMode  = fmt.Sprintf(NaviColor, "r", "row mode")
+    editMode  = fmt.Sprintf(NaviColor, "e", "e mode")
     stopApp  = fmt.Sprintf(NaviColor, "q", "stop")
-    defaultNavis = strings.Join([]string{cellMode, rowMode, stopApp}, "  ")
+    defaultNavis = strings.Join([]string{cellMode, rowMode, editMode, stopApp}, "  ")
 )
 
 var (
@@ -66,40 +67,49 @@ func (t *Tui)SetKeyBind () {
                 t.Mode = "row";
                 t.Table.SetSelectable(true, false)
             }
+        case 'e':
+            if frontPageName == "tableList" {
+                 t.EditTable()
+            }
         }
         if event.Key() == tcell.KeyEnter {
-            t.SetNaviText(frontPageName);
-            var nextPageName string
-            if frontPageName == "tableList" {
-                row, col := t.Table.GetSelection();
-                textArr := make([]string, 0)
-                if t.Mode == "cell"{
-                    cell := t.Table.GetCell(row, col);
-                    t.Modal.SetText(cell.Text);
+            if frontPageName == "tableList" || frontPageName == "modal"{
+                t.SetNaviText(frontPageName);
+                var nextPageName string
+                if frontPageName == "tableList" {
+                    row, col := t.Table.GetSelection();
+                    textArr := make([]string, 0)
+                    if t.Mode == "cell"{
+                        cell := t.Table.GetCell(row, col);
+                        t.Modal.SetText(cell.Text);
 
-                }else if t.Mode == "row" {
-                    col_max := t.Table.GetColumnCount();
-                    for i := 0; i < col_max; i++ {
-                        row, _ := t.Table.GetSelection();
-                        cell := t.Table.GetCell(row, i);
-                        textArr = append(textArr, cell.Text)
+                    }else if t.Mode == "row" {
+                        col_max := t.Table.GetColumnCount();
+                        for i := 0; i < col_max; i++ {
+                            row, _ := t.Table.GetSelection();
+                            cell := t.Table.GetCell(row, i);
+                            textArr = append(textArr, cell.Text)
+                        }
+                        t.Modal.SetText(strings.Join(textArr, "\n"))
+
                     }
-                    t.Modal.SetText(strings.Join(textArr, "\n"));
-
+                    t.Layout.RemoveItem(t.Table)
+                    t.Layout.AddItem(t.Modal, 0, 1, true)
+                    nextPageName = "modal"
+                } else {
+                    t.Layout.RemoveItem(t.Modal)
+                    t.Layout.AddItem(t.Table, 0, 1, true)
+                    nextPageName = "tableList"
                 }
-                t.Layout.RemoveItem(t.Table)
-                t.Layout.AddItem(t.Modal, 0, 1, true)
-                nextPageName = "modal"
-            } else {
-                t.Layout.RemoveItem(t.Modal)
-                t.Layout.AddItem(t.Table, 0, 1, true)
-                nextPageName = "tableList"
-            }
-            t.Layout.RemoveItem(t.Navi)
-            t.Pages.RemovePage(frontPageName)
+                t.Layout.RemoveItem(t.Navi)
+                t.Pages.RemovePage(frontPageName)
 
-            t.Layout.AddItem(t.Navi, 1, 1, false)
-            t.Pages.AddAndSwitchToPage(nextPageName, t.Layout, true)
+                t.Layout.AddItem(t.Navi, 1, 1, false)
+                t.Pages.AddAndSwitchToPage(nextPageName, t.Layout, true)
+            }
+        }
+        if event.Key() == tcell.KeyCtrlR {
+            //t.Table.InsertRow()
         }
 
         return event;

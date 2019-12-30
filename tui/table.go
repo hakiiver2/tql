@@ -138,3 +138,20 @@ func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
 
     return tt;
 }
+
+func (tui *Tui) EditTable() {
+    col_max := tui.Table.GetColumnCount()
+    //rowInfo := make([]string, 0)
+
+    for i := 0; i < col_max; i++ {
+        row, _ := tui.Table.GetSelection();
+        field_name := tui.Table.GetCell(0, i);
+        cell := tui.Table.GetCell(row, i);
+        //rowInfo = append(rowInfo, cell.Text)
+        tui.EditForm.AddInputField(field_name.Text, cell.Text, 20, nil, nil)
+    }
+    tui.EditForm.AddButton("Save", nil)
+    tui.EditForm.AddButton("Quit", nil)
+    tui.Pages.AddAndSwitchToPage("editForm", tui.EditForm, true)
+
+}

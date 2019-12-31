@@ -20,31 +20,7 @@ func (t *Tui) CreateTable(info *dbinfo.DbInfo) {
     offset := 0;
     skip := 100;
     max_row := skip;
-
-    for row, line := range strings.Split(getRows(info, offset, max_row, "init"), "\n") {
-        for column, cell := range strings.Split(line, "|") {
-            color := tcell.ColorWhite
-            if row == 0{
-                color = tcell.ColorYellow
-            } else if column == 0 {
-                color = tcell.ColorDarkCyan
-            }
-            align := tview.AlignLeft
-            if row == 0 {
-                align = tview.AlignCenter
-            } else if column == 0 || column >= 4 {
-                align = tview.AlignRight
-            }
-            tableCell := tview.NewTableCell(cell).
-                SetTextColor(color).
-                SetAlign(align).
-                SetSelectable(row != 0 && column != 0)
-            if column >= 1 && column <= 3 {
-                tableCell.SetExpansion(1)
-            }
-            t.Table.SetCell(row, column, tableCell)
-        }
-    }
+    t.SetTable(info, offset, max_row, "init")
 
 
     t.Table.SetBorder(true).SetTitle("table");
@@ -60,29 +36,7 @@ func (t *Tui) CreateTable(info *dbinfo.DbInfo) {
             file.Write(b)
             if max_row == row {
                 offset, max_row = offset + skip, skip + max_row;
-                for row, line := range strings.Split(getRows(info, offset, max_row, "add"), "\n") {
-                    cur_row := row + offset;
-                    for column, cell := range strings.Split(line, "|") {
-                        color := tcell.ColorWhite
-                        if column == 0 {
-                            color = tcell.ColorDarkCyan
-                        }
-                        align := tview.AlignLeft
-                        if column == 0 || column >= 4 {
-                            align = tview.AlignRight
-                        }
-                        tableCell := tview.NewTableCell(cell).
-                        SetTextColor(color).
-                        SetAlign(align).
-                        SetSelectable(cur_row != 0 && column != 0)
-                        if column >= 1 && column <= 3 {
-                            tableCell.SetExpansion(1)
-                        }
-                        b := []byte(line);
-                        file.Write(b)
-                        t.Table.SetCell(cur_row, column, tableCell)
-                    }
-                }
+                t.SetTable(info, offset, max_row, "add")
             }
     })
 
@@ -137,6 +91,33 @@ func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
     }
 
     return tt;
+}
+
+func (tui *Tui) SetTable(info *dbinfo.DbInfo, offset int, max_row int, setType string) {
+    for row, line := range strings.Split(getRows(info, offset, max_row, setType), "\n") {
+        for column, cell := range strings.Split(line, "|") {
+            color := tcell.ColorWhite
+            if row == 0{
+                color = tcell.ColorYellow
+            } else if column == 0 {
+                color = tcell.ColorDarkCyan
+            }
+            align := tview.AlignLeft
+            if row == 0 {
+                align = tview.AlignCenter
+            } else if column == 0 || column >= 4 {
+                align = tview.AlignRight
+            }
+            tableCell := tview.NewTableCell(cell).
+                SetTextColor(color).
+                SetAlign(align).
+                SetSelectable(row != 0 && column != 0)
+            if column >= 1 && column <= 3 {
+                tableCell.SetExpansion(1)
+            }
+            tui.Table.SetCell(row, column, tableCell)
+        }
+    }
 }
 
 func (tui *Tui) EditTable() {

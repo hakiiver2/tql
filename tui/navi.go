@@ -71,9 +71,13 @@ func (t *Tui)SetKeyBind () {
             if frontPageName == "tableList" {
                  t.EditTable()
             }
+        case ':':
+            if frontPageName != "cmdline" {
+                t.CmdLineMode(frontPageName)
+            }
         }
         if event.Key() == tcell.KeyEnter {
-            if frontPageName == "tableList" || frontPageName == "modal"{
+            if frontPageName == "tableList" || frontPageName == "modal" {
                 t.SetNaviText(frontPageName);
                 var nextPageName string
                 if frontPageName == "tableList" {

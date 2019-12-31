@@ -87,7 +87,7 @@ func ConnectDB(tui *Tui, DB string, info *dbinfo.DbInfo){
         AddItem(tui.Table, 0, 1, true).
         AddItem(tui.Navi, 1, 1, false)
     tui.Pages.AddAndSwitchToPage("tableList", tui.Layout, true);
-    tui.InitCmdLine()
+    tui.InitCmdLine(info)
     if err := tui.App.SetRoot(tui.Pages, true).Run(); err != nil {
         panic(err);
     }

@@ -4,7 +4,7 @@ import (
     "database/sql"
     "fmt"
     "github.com/rivo/tview"
-	"github.com/hakiiver2/tql/dbinfo"
+	//"github.com/hakiiver2/tql/dbinfo"
     //"strconv"
     _ "github.com/go-sql-driver/mysql"
 )
@@ -45,16 +45,16 @@ func New() *Tui{
     return tui
 }
 
-func (tui *Tui) Run (i interface{}, DB string, info *dbinfo.DbInfo) {
-    fmt.Println(info)
-    ConnectDB(tui, DB, info);
+var dbinfo DbInfo
+
+func (tui *Tui) Run (i interface{}, DB string, info *DbInfo) {
+    dbinfo = info.GetDbInfo()
+    ConnectDB(tui, DB);
 }
 
-func ConnectDB(tui *Tui, DB string, info *dbinfo.DbInfo){
+func ConnectDB(tui *Tui, DB string){
 
-    fmt.Println(info)
-
-    db, err := sql.Open(DB, info.UserName + ":@/" + info.DbName)
+    db, err := sql.Open(DB, dbinfo.UserName + ":"+dbinfo.PassWord+"@/" + dbinfo.DbName)
     if err != nil {
         tui.App.Stop()
     }
@@ -80,14 +80,14 @@ func ConnectDB(tui *Tui, DB string, info *dbinfo.DbInfo){
 
 
     //tui.Pages.AddAndSwitchToPage("tableList", textview, true);
-    tui.CreateTable(info);
+    tui.CreateTable();
     //layout := tview.NewFlex().
         tui.Layout.
         SetDirection(tview.FlexRow).
         AddItem(tui.Table, 0, 1, true).
         AddItem(tui.Navi, 1, 1, false)
     tui.Pages.AddAndSwitchToPage("tableList", tui.Layout, true);
-    tui.InitCmdLine(info)
+    tui.InitCmdLine()
     if err := tui.App.SetRoot(tui.Pages, true).Run(); err != nil {
         panic(err);
     }

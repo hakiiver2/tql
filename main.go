@@ -6,7 +6,7 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/hakiiver2/tql/dbinfo"
+	//"github.com/hakiiver2/tql/dbinfo"
 	"github.com/hakiiver2/tql/tui"
 )
 
@@ -23,11 +23,8 @@ func main() {
     )
     flag.Parse()
 
-    info := dbinfo.New().Set(*UserName, *PassWord, *DbName, *TableName, *FieldName, *Sql);
-    iinfo := info.GetDbInfo();
-    fmt.Println(iinfo)
+    info := tui.NewDbInfo().Set(*UserName, *PassWord, *DbName, *TableName, *FieldName, *Sql);
     fmt.Println(info);
-    fmt.Println(info.UserName);
     tui.New().Run(i, "mysql", info)
     // if err := tui.New().Run(i); err != nil {
     // }

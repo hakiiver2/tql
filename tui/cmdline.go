@@ -6,10 +6,10 @@ import (
 
     "github.com/gdamore/tcell"
     _ "github.com/go-sql-driver/mysql"
-    "github.com/hakiiver2/tql/dbinfo"
+    //"github.com/hakiiver2/tql/dbinfo"
 )
 
-func (tui *Tui) InitCmdLine(info *dbinfo.DbInfo) {
+func (tui *Tui) InitCmdLine() {
 
     tui.CmdLine.SetLabel("sql")
     tui.CmdLine.SetDoneFunc(func(key tcell.Key) {
@@ -17,9 +17,9 @@ func (tui *Tui) InitCmdLine(info *dbinfo.DbInfo) {
         if frontPageName == "cmdline" {
             if key == tcell.KeyEnter {
                 sql := tui.CmdLine.GetText()
-                info.Sql = sql
+                dbinfo.Sql = sql
                 tui.Table.Clear()
-                tui.CreateTable(info);
+                tui.CreateTable();
 
             }else if key == tcell.KeyEscape {
 

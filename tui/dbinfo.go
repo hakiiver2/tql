@@ -1,4 +1,4 @@
-package dbinfo
+package tui
 
 import (
     "fmt"
@@ -13,10 +13,9 @@ type DbInfo struct {
     Sql       string
 }
 
-var dbInfo *DbInfo
 var empty = "";
 
-func New() *DbInfo {
+func NewDbInfo() *DbInfo {
     dbinfo := &DbInfo {
         UserName:   empty,
         PassWord:   empty,
@@ -27,20 +26,6 @@ func New() *DbInfo {
     }
 
     return dbinfo;
-}
-
-func SetDbInfo (UserName string, PassWord string, DbName string, TableName string, FieldName string, Sql string) *DbInfo{
-
-    dbInfo.UserName   = UserName;
-    dbInfo.PassWord   = PassWord;
-    dbInfo.DbName     = DbName;
-    dbInfo.TableName  = TableName;
-    dbInfo.FieldName  = FieldName;
-    dbInfo.Sql        = Sql;
-
-    fmt.Println(dbInfo.UserName)
-
-    return dbInfo;
 }
 
 
@@ -62,6 +47,3 @@ func (dbinfo DbInfo) GetDbInfo () DbInfo {
     return dbinfo;
 }
 
-func GetDbInfo () *DbInfo {
-    return dbInfo;
-}

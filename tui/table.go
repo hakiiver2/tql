@@ -6,21 +6,23 @@ import (
     "github.com/rivo/tview"
     "github.com/gdamore/tcell"
     "database/sql"
-	"github.com/hakiiver2/tql/dbinfo"
+	// "github.com/hakiiver2/tql/dbinfo"
     "fmt"
     _ "github.com/go-sql-driver/mysql"
     "os"
 )
 
 
-func (t *Tui) CreateTable(info *dbinfo.DbInfo) {
+
+func (t *Tui) CreateTable() {
+
     t.Table.SetFixed(1, 1);
     fmt.Println("Reading...");
 
     offset := 0;
     skip := 100;
     max_row := skip;
-    t.SetTable(info, offset, max_row, "init")
+    t.SetTable(offset, max_row, "init")
 
 
     t.Table.SetBorder(true).SetTitle("table");
@@ -36,14 +38,14 @@ func (t *Tui) CreateTable(info *dbinfo.DbInfo) {
             file.Write(b)
             if max_row == row {
                 offset, max_row = offset + skip, skip + max_row;
-                t.SetTable(info, offset, max_row, "add")
+                t.SetTable(offset, max_row, "add")
             }
     })
 
 }
 
-func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
-    db, err := sql.Open("mysql", info.UserName + ":@/" + info.DbName)
+func getRows(skip int, max int, f_type string) string {
+    db, err := sql.Open("mysql", dbinfo.UserName + ":@/" + dbinfo.DbName)
     if err != nil {
         panic(err);
     }
@@ -51,10 +53,10 @@ func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
     max_string := strconv.Itoa(max)
 
     var r *sql.Rows;
-    if info.Sql != "" {
-        r, err = db.Query(info.Sql + " LIMIT " + max_string + " OFFSET " + skip_string);
+    if dbinfo.Sql != "" {
+        r, err = db.Query(dbinfo.Sql + " LIMIT " + max_string + " OFFSET " + skip_string);
     }else{
-        r, err = db.Query("SELECT " + info.FieldName + " FROM " + info.TableName +" LIMIT " + max_string + " OFFSET " + skip_string);
+        r, err = db.Query("SELECT " + dbinfo.FieldName + " FROM " + dbinfo.TableName +" LIMIT " + max_string + " OFFSET " + skip_string);
     }
     if err != nil {
         panic(err);
@@ -93,8 +95,8 @@ func getRows(info *dbinfo.DbInfo, skip int, max int, f_type string) string {
     return tt;
 }
 
-func (tui *Tui) SetTable(info *dbinfo.DbInfo, offset int, max_row int, setType string) {
-    for row, line := range strings.Split(getRows(info, offset, max_row, setType), "\n") {
+func (tui *Tui) SetTable(offset int, max_row int, setType string) {
+    for row, line := range strings.Split(getRows(offset, max_row, setType), "\n") {
         for column, cell := range strings.Split(line, "|") {
             color := tcell.ColorWhite
             if row == 0{

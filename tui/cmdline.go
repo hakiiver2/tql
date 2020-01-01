@@ -3,6 +3,7 @@ package tui
 import (
     // "github.com/rivo/tview"
     _ "fmt"
+    "strings"
 
     "github.com/gdamore/tcell"
     _ "github.com/go-sql-driver/mysql"
@@ -17,12 +18,11 @@ func (tui *Tui) InitCmdLine() {
         if frontPageName == "cmdline" {
             if key == tcell.KeyEnter {
                 sql := tui.CmdLine.GetText()
-                dbinfo.Sql = sql
+                if isSelectSql(sql) {
+                    dbinfo.Sql = sql
+                }
                 tui.Table.Clear()
                 tui.CreateTable();
-
-            }else if key == tcell.KeyEscape {
-
             }
             tui.Layout.RemoveItem(tui.CmdLine)
             tui.Layout.RemoveItem(tui.Table)
@@ -51,3 +51,9 @@ func (tui *Tui) CmdLineMode(frontPageName string) {
     tui.Pages.AddAndSwitchToPage("cmdline", tui.Layout, true)
 }
 
+func isSelectSql(sql string) bool {
+    sql_list := strings.Split(sql, " ")
+    first := strings.ToUpper(sql_list[0])
+
+    return first == "SELECT"
+}

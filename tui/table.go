@@ -126,14 +126,38 @@ func (tui *Tui) EditTable() {
     col_max := tui.Table.GetColumnCount()
     //rowInfo := make([]string, 0)
 
+
+    var id string
     for i := 0; i < col_max; i++ {
         row, _ := tui.Table.GetSelection();
         field_name := tui.Table.GetCell(0, i);
         cell := tui.Table.GetCell(row, i);
         //rowInfo = append(rowInfo, cell.Text)
         tui.EditForm.AddInputField(field_name.Text, cell.Text, 20, nil, nil)
+        if field_name.Text == "id" {
+            id = cell.Text
+        }
     }
-    tui.EditForm.AddButton("Save", nil)
+    saveToDB := func() {
+        count := tui.EditForm.GetFormItemCount()
+        for i := 0; i < count; i++ {
+            item := tui.EditForm.GetFormItem(i)
+            db, err := sql.Open("mysql", dbinfo.UserName + ":@/" + dbinfo.DbName)
+            if err != nil {
+                panic(err);
+            }
+            defer db.Close()
+            switch item.(type) {
+            case *tview.InputField:
+                input, _ := item.(*tview.InputField)
+                label := item.GetLabel()
+                text := input.GetText()
+                update_sql := "UPDATE " + dbinfo.TableName + " SET " + label + " = ? WHERE id = ?"
+                db.Exec(update_sql, text, id)
+            }
+        }
+    }
+    tui.EditForm.AddButton("Save", saveToDB)
     tui.EditForm.AddButton("Quit", nil)
     tui.Pages.AddAndSwitchToPage("editForm", tui.EditForm, true)
 

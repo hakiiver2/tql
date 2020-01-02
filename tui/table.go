@@ -128,8 +128,10 @@ func (tui *Tui) EditTable() {
 
 
     var id string
+    var selectedRow int
     for i := 0; i < col_max; i++ {
         row, _ := tui.Table.GetSelection();
+        selectedRow = row
         field_name := tui.Table.GetCell(0, i);
         cell := tui.Table.GetCell(row, i);
         //rowInfo = append(rowInfo, cell.Text)
@@ -154,6 +156,9 @@ func (tui *Tui) EditTable() {
                 text := input.GetText()
                 update_sql := "UPDATE " + dbinfo.TableName + " SET " + label + " = ? WHERE id = ?"
                 db.Exec(update_sql, text, id)
+                cell := tview.NewTableCell(text)
+                tui.Table.SetCell(selectedRow, i, cell)
+                tui.Pages.SwitchToPage("tableList")
             }
         }
     }
@@ -162,3 +167,4 @@ func (tui *Tui) EditTable() {
     tui.Pages.AddAndSwitchToPage("editForm", tui.EditForm, true)
 
 }
+

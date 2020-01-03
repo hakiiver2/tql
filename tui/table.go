@@ -159,6 +159,7 @@ func (tui *Tui) EditTable() {
                 cell := tview.NewTableCell(text)
                 tui.Table.SetCell(selectedRow, i, cell)
                 tui.Pages.SwitchToPage("tableList")
+                tui.Pages.RemovePage("editForm")
             }
         }
     }
@@ -168,3 +169,51 @@ func (tui *Tui) EditTable() {
 
 }
 
+func (tui *Tui) InsertRow() {
+    col_max := tui.Table.GetColumnCount()
+    for i := 0; i < col_max; i++ {
+        if i != 0 && i != col_max - 1 {
+            field_name := tui.Table.GetCell(0, i);
+            tui.EditForm.AddInputField(field_name.Text, "", 20, nil, nil)
+        }
+    }
+    saveToDB := func() {
+        count := tui.EditForm.GetFormItemCount()
+        labelList := make([]string, 0)
+        valueList := make([]string, 0)
+        db, err := sql.Open("mysql", dbinfo.UserName + ":@/" + dbinfo.DbName)
+        if err != nil {
+            panic(err);
+        }
+        defer db.Close()
+        for i := 0; i < count; i++ {
+            item := tui.EditForm.GetFormItem(i)
+
+            switch item.(type) {
+            case *tview.InputField:
+                input, _ := item.(*tview.InputField)
+                label := item.GetLabel()
+                text := input.GetText()
+                if label != "" {
+                    labelList = append(labelList, label)
+                    valueList = append(valueList, text)
+                }
+            }
+        }
+        labels := strings.Join(labelList, ",")
+        values := strings.Join(valueList, "\",\"")
+        values = "\"" + values + "\""
+
+        _, err = db.Exec("INSERT INTO " + dbinfo.TableName + " ( " + labels + " ) " + " VALUES" + " ( " + values + " ) ")
+        if err != nil {
+            panic(err)
+        }
+
+        tui.SetTable(0, 100, "init")
+        tui.Pages.SwitchToPage("tableList")
+        tui.Pages.RemovePage("insertForm")
+    }
+    tui.EditForm.AddButton("Save", saveToDB)
+    tui.EditForm.AddButton("Quit", nil)
+    tui.Pages.AddAndSwitchToPage("insertForm", tui.EditForm, true)
+}

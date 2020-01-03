@@ -12,9 +12,10 @@ var NaviColor = `[red::b]%s[white]: %s`
 var (
     cellMode = fmt.Sprintf(NaviColor, "c", "cell mode")
     rowMode  = fmt.Sprintf(NaviColor, "r", "row mode")
-    editMode  = fmt.Sprintf(NaviColor, "e", "e mode")
+    insertMode  = fmt.Sprintf(NaviColor, "i", "insert mode")
+    editMode  = fmt.Sprintf(NaviColor, "e", "edit mode")
     stopApp  = fmt.Sprintf(NaviColor, "q", "stop")
-    defaultNavis = strings.Join([]string{cellMode, rowMode, editMode, stopApp}, "  ")
+    defaultNavis = strings.Join([]string{cellMode, rowMode, insertMode, editMode, stopApp}, "  ")
 )
 
 var (
@@ -68,6 +69,10 @@ func (t *Tui)SetKeyBind () {
             if frontPageName == "tableList" {
                 t.Mode = "row"
                 t.Table.SetSelectable(true, false)
+            }
+        case 'i':
+            if frontPageName == "tableList" {
+                 t.InsertRow()
             }
         case 'e':
             if frontPageName == "tableList" {

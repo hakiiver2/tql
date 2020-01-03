@@ -57,7 +57,7 @@ func (t *Tui)SetKeyBind () {
         frontPageName, _ := t.Pages.GetFrontPage();
         switch event.Rune() {
         case 'q':
-            if frontPageName != "cmdline" {
+            if frontPageName == "tableList" || frontPageName == "modal"{
                 t.App.Stop()
             }
         case 'c':

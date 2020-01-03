@@ -56,15 +56,17 @@ func (t *Tui)SetKeyBind () {
         frontPageName, _ := t.Pages.GetFrontPage();
         switch event.Rune() {
         case 'q':
-            t.App.Stop();
+            if frontPageName != "cmdline" {
+                t.App.Stop()
+            }
         case 'c':
             if frontPageName == "tableList" {
-                t.Mode = "cell";
+                t.Mode = "cell"
                 t.Table.SetSelectable(true, true)
             }
         case 'r':
             if frontPageName == "tableList" {
-                t.Mode = "row";
+                t.Mode = "row"
                 t.Table.SetSelectable(true, false)
             }
         case 'e':

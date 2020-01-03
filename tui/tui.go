@@ -54,7 +54,7 @@ func (tui *Tui) Run (i interface{}, DB string, info *DbInfo) {
 
 func ConnectDB(tui *Tui, DB string){
 
-    db, err := sql.Open(DB, dbinfo.UserName + ":"+dbinfo.PassWord+"@/" + dbinfo.DbName)
+    db, err := sql.Open(DB, dbinfo.UserName + ":"+dbinfo.PassWord+"@" + dbinfo.Host + "/" + dbinfo.DbName)
     if err != nil {
         tui.App.Stop()
     }

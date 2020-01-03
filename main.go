@@ -19,11 +19,12 @@ func main() {
         DbName = flag.String("db", "", "database name")
         TableName = flag.String("table", "", "table name")
         FieldName = flag.String("field", "*", "field name")
+        Host      = flag.String("host", "", "host name")
         Sql = flag.String("sql", "", "sql")
     )
     flag.Parse()
 
-    info := tui.NewDbInfo().Set(*UserName, *PassWord, *DbName, *TableName, *FieldName, *Sql);
+    info := tui.NewDbInfo().Set(*UserName, *PassWord, *DbName, *TableName, *FieldName, *Host, *Sql);
     fmt.Println(info);
     tui.New().Run(i, "mysql", info)
     // if err := tui.New().Run(i); err != nil {

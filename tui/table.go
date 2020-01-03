@@ -45,7 +45,7 @@ func (t *Tui) CreateTable() {
 }
 
 func getRows(skip int, max int, f_type string) string {
-    db, err := sql.Open("mysql", dbinfo.UserName + ":" + dbinfo.PassWord + "@/" + dbinfo.DbName)
+    db, err := sql.Open("mysql", dbinfo.UserName + ":" + dbinfo.PassWord + "@" + dbinfo.Host + "/" + dbinfo.DbName)
     if err != nil {
         panic(err);
     }

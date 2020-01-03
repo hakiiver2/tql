@@ -10,6 +10,7 @@ type DbInfo struct {
     DbName    string
     TableName string
     FieldName string
+    Host      string
     Sql       string
 }
 
@@ -22,6 +23,7 @@ func NewDbInfo() *DbInfo {
         DbName:     empty,
         TableName:  empty,
         FieldName:  empty,
+        Host     :  empty,
         Sql:  empty,
     }
 
@@ -29,14 +31,15 @@ func NewDbInfo() *DbInfo {
 }
 
 
-func (dbinfo *DbInfo) Set (UserName string, PassWord string, DbName string,TableName string, FieldName string, Sql  string) *DbInfo{
+func (dbinfo *DbInfo) Set (UserName string, PassWord string, DbName string,TableName string, FieldName string, Host string, Sql  string) *DbInfo{
 
-    dbinfo.UserName   = UserName;
-    dbinfo.PassWord   = PassWord;
-    dbinfo.DbName     = DbName;
-    dbinfo.TableName  = TableName;
-    dbinfo.FieldName  = FieldName;
-    dbinfo.Sql        = Sql;
+    dbinfo.UserName   = UserName
+    dbinfo.PassWord   = PassWord
+    dbinfo.DbName     = DbName
+    dbinfo.TableName  = TableName
+    dbinfo.FieldName  = FieldName
+    dbinfo.Host       = "tcp(" + Host + ")"
+    dbinfo.Sql        = Sql
 
     fmt.Println(dbinfo.UserName)
 

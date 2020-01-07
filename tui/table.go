@@ -13,15 +13,18 @@ import (
 )
 
 
+var (
+    offset int = 0
+    skip int = 100
+    max_row int = skip
+)
+
 
 func (t *Tui) CreateTable() {
 
     t.Table.SetFixed(1, 1);
     fmt.Println("Reading...");
 
-    offset := 0;
-    skip := 100;
-    max_row := skip;
     t.SetTable(offset, max_row, "init")
 
 
@@ -128,27 +131,29 @@ func (tui *Tui) EditTable() {
 
 
     var id string
-    var selectedRow int
+    // var selectedRow int
     for i := 0; i < col_max; i++ {
-        row, _ := tui.Table.GetSelection();
-        selectedRow = row
-        field_name := tui.Table.GetCell(0, i);
-        cell := tui.Table.GetCell(row, i);
-        //rowInfo = append(rowInfo, cell.Text)
-        tui.EditForm.AddInputField(field_name.Text, cell.Text, 20, nil, nil)
-        if field_name.Text == "id" {
-            id = cell.Text
+        if i != 0 && i != col_max - 1 {
+            row, _ := tui.Table.GetSelection();
+            // selectedRow = row
+            field_name := tui.Table.GetCell(0, i);
+            cell := tui.Table.GetCell(row, i);
+            //rowInfo = append(rowInfo, cell.Text)
+            tui.EditForm.AddInputField(field_name.Text, cell.Text, 20, nil, nil)
+            if field_name.Text == "id" {
+                id = cell.Text
+            }
         }
     }
     saveToDB := func() {
         count := tui.EditForm.GetFormItemCount()
+        db, err := sql.Open("mysql", dbinfo.UserName + ":@/" + dbinfo.DbName)
+        if err != nil {
+            panic(err);
+        }
+        defer db.Close()
         for i := 0; i < count; i++ {
             item := tui.EditForm.GetFormItem(i)
-            db, err := sql.Open("mysql", dbinfo.UserName + ":@/" + dbinfo.DbName)
-            if err != nil {
-                panic(err);
-            }
-            defer db.Close()
             switch item.(type) {
             case *tview.InputField:
                 input, _ := item.(*tview.InputField)
@@ -156,12 +161,14 @@ func (tui *Tui) EditTable() {
                 text := input.GetText()
                 update_sql := "UPDATE " + dbinfo.TableName + " SET " + label + " = ? WHERE id = ?"
                 db.Exec(update_sql, text, id)
-                cell := tview.NewTableCell(text)
-                tui.Table.SetCell(selectedRow, i, cell)
-                tui.Pages.SwitchToPage("tableList")
-                tui.Pages.RemovePage("editForm")
+                // cell := tview.NewTableCell(text)
+                // tui.Table.SetCell(selectedRow, i, cell)
             }
         }
+        tui.reloadTable()
+        tui.Pages.SwitchToPage("tableList")
+        tui.Pages.RemovePage("editForm")
+        tui.EditForm.Clear(true)
     }
     tui.EditForm.AddButton("Save", saveToDB)
     tui.EditForm.AddButton("Quit", nil)
@@ -209,11 +216,16 @@ func (tui *Tui) InsertRow() {
             panic(err)
         }
 
-        tui.SetTable(0, 100, "init")
+        tui.reloadTable()
         tui.Pages.SwitchToPage("tableList")
         tui.Pages.RemovePage("insertForm")
+        tui.EditForm.Clear(true)
     }
     tui.EditForm.AddButton("Save", saveToDB)
     tui.EditForm.AddButton("Quit", nil)
     tui.Pages.AddAndSwitchToPage("insertForm", tui.EditForm, true)
+}
+
+func (tui *Tui) reloadTable() {
+    tui.SetTable(offset, max_row, "init")
 }
